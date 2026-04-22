@@ -178,7 +178,7 @@ croniter==6.0.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
-cryptography==46.0.6
+cryptography==46.0.7
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -655,7 +655,7 @@ pgsanity==0.2.9
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
-pillow==12.1.1
+pillow==12.2.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
@@ -778,7 +778,7 @@ pynacl==1.6.2
     # via
     #   -c requirements/base-constraint.txt
     #   paramiko
-pyopenssl==25.3.0
+pyopenssl==26.0.0
     # via
     #   -c requirements/base-constraint.txt
     #   shillelagh
@@ -865,7 +865,7 @@ referencing==0.36.2
     #   jsonschema
     #   jsonschema-path
     #   jsonschema-specifications
-requests==2.32.4
+requests==2.33.0
     # via
     #   -c requirements/base-constraint.txt
     #   docker
