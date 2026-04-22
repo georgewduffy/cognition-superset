@@ -389,6 +389,7 @@
   },
   "overrides": {
     "core-js": "^3.38.1",
+    "lodash-es": "^4.18.1",
     "puppeteer": "^22.4.1",
     "remark-gfm": "^3.0.1",
     "underscore": "^1.13.7",
