@@ -393,6 +393,7 @@
     "remark-gfm": "^3.0.1",
     "underscore": "^1.13.7",
     "jspdf": "^4.2.0",
+    "dompurify": "^3.4.0",
     "nwsapi": "^2.2.13",
     "@deck.gl/aggregation-layers": "~9.2.5",
     "@deck.gl/core": "~9.2.5",
