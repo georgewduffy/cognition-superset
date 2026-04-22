@@ -29,6 +29,20 @@ EMPTY_STRING = "<empty string>"
 
 CHANGE_ME_SECRET_KEY = "CHANGE_ME_TO_A_COMPLEX_RANDOM_SECRET"  # noqa: S105
 
+# Known-insecure SECRET_KEY values that have historically been shipped as
+# defaults or placeholders in this repository. Any deployment running with one
+# of these values is effectively unauthenticated (see CVE-2023-27524): the key
+# is used both to sign session cookies and to encrypt stored database
+# credentials, and all of these values are public on GitHub. The startup check
+# in ``superset.initialization`` refuses to boot in non-debug mode when the
+# configured SECRET_KEY matches any entry in this set.
+KNOWN_INSECURE_SECRET_KEYS: frozenset[str] = frozenset(
+    {
+        CHANGE_ME_SECRET_KEY,
+        "TEST_NON_DEV_SECRET",  # noqa: S105  # historical docker/.env default
+    }
+)
+
 # UUID for the examples database
 EXAMPLES_DB_UUID = "a2dc77af-e654-49bb-b321-40f6b559a1ee"
 

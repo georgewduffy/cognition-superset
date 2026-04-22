@@ -37,7 +37,7 @@ from flask_compress import Compress
 from flask_session import Session
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from superset.constants import CHANGE_ME_SECRET_KEY
+from superset.constants import KNOWN_INSECURE_SECRET_KEYS
 from superset.databases.utils import make_url_safe
 from superset.extensions import (
     _event_logger,
@@ -641,7 +641,7 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             )
             logger.warning(bottom_banner)
 
-        if self.config["SECRET_KEY"] == CHANGE_ME_SECRET_KEY:
+        if self.config["SECRET_KEY"] in KNOWN_INSECURE_SECRET_KEYS:
             if (
                 self.superset_app.debug
                 or self.superset_app.config["TESTING"]
