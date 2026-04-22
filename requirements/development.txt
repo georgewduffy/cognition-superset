@@ -710,7 +710,7 @@ psycopg2-binary==2.9.9
     # via apache-superset
 py-key-value-aio==0.4.4
     # via fastmcp
-pyarrow==16.1.0
+pyarrow==17.0.0
     # via
     #   -c requirements/base-constraint.txt
     #   apache-superset
