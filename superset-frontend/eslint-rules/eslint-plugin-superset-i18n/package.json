@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-i18n-strings",
+  "name": "@superset-ui/eslint-plugin-translations",
   "version": "1.0.0",
   "description": "Warns about translation variables",
   "main": "index.ts",

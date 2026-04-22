@@ -56,7 +56,7 @@ module.exports = {
     // ONLY custom Superset plugins that OXC doesn't support
     'theme-colors',
     'icons',
-    'i18n-strings',
+    '@superset-ui/translations',
     'file-progress',
     'prettier',
   ],
@@ -69,7 +69,7 @@ module.exports = {
     // Custom Superset plugins
     'theme-colors/no-literal-colors': 'error',
     'icons/no-fa-icons-usage': 'error',
-    'i18n-strings/no-template-vars': 'error',
+    '@superset-ui/translations/no-template-vars': 'error',
     'file-progress/activate': 1,
 
     // Explicitly turn off all other rules to avoid conflicts
@@ -96,7 +96,7 @@ module.exports = {
       rules: {
         'theme-colors/no-literal-colors': 0,
         'icons/no-fa-icons-usage': 0,
-        'i18n-strings/no-template-vars': 0,
+        '@superset-ui/translations/no-template-vars': 0,
         'file-progress/activate': 0,
       },
     },

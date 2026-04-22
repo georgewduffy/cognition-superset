@@ -130,7 +130,7 @@ module.exports = {
     'lodash',
     'theme-colors',
     'icons',
-    'i18n-strings',
+    '@superset-ui/translations',
     'react-prefer-function-component',
     'react-you-might-not-need-an-effect',
     'prettier',
@@ -144,7 +144,7 @@ module.exports = {
     // Custom Superset rules
     'theme-colors/no-literal-colors': 'error',
     'icons/no-fa-icons-usage': 'error',
-    'i18n-strings/no-template-vars': 'error',
+    '@superset-ui/translations/no-template-vars': 'error',
 
     // Core ESLint overrides for Superset
     'no-console': 'warn',
@@ -491,7 +491,7 @@ module.exports = {
       rules: {
         'theme-colors/no-literal-colors': 0,
         'icons/no-fa-icons-usage': 0,
-        'i18n-strings/no-template-vars': 0,
+        '@superset-ui/translations/no-template-vars': 0,
         'no-restricted-imports': 0,
       },
     },
