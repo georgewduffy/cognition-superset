@@ -317,7 +317,7 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-cypress": "^3.6.0",
-    "eslint-plugin-i18n-strings": "file:eslint-rules/eslint-plugin-i18n-strings",
+    "@superset-ui/eslint-plugin-translations": "file:eslint-rules/eslint-plugin-superset-i18n",
     "eslint-plugin-icons": "file:eslint-rules/eslint-plugin-icons",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jest-dom": "^5.5.0",
