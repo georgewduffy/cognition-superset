@@ -341,9 +341,9 @@ class RoleRestAPI(BaseSupersetApi):
                 count=total_count,
                 ids=[role.id for role in roles],
             )
-        except ForbiddenError as e:
-            return self.response_403(message=str(e))
-        except Exception as e:
+        except ForbiddenError:
+            return self.response_403()
+        except Exception as e:  # pylint: disable=broad-except
             return self.response_500(message=str(e))
 
 
