@@ -301,10 +301,7 @@ def test_get_database_perm_format(app_context: None) -> None:
 
 def test_get_dataset_perm_format(app_context: None) -> None:
     sm = SupersetSecurityManager(appbuilder)
-    assert (
-        sm.get_dataset_perm(11, "users", "examples")
-        == "[examples].[users](id:11)"
-    )
+    assert sm.get_dataset_perm(11, "users", "examples") == "[examples].[users](id:11)"
 
 
 def test_error_object_helpers(app_context: None, mocker: MockerFixture) -> None:
@@ -323,6 +320,7 @@ def test_error_object_helpers(app_context: None, mocker: MockerFixture) -> None:
     assert "datasource 5" in msg
     err_ds = sm.get_datasource_access_error_object(datasource)
     assert err_ds.error_type == SupersetErrorType.DATASOURCE_SECURITY_ACCESS_ERROR
+    assert err_ds.extra is not None
     assert err_ds.extra["datasource"] == 5
     assert err_ds.extra["datasource_name"] == "users"
 
@@ -336,13 +334,14 @@ def test_get_table_access_error_msg_and_object(
 ) -> None:
     sm = SupersetSecurityManager(appbuilder)
     table = mocker.MagicMock()
-    table.__str__ = lambda _self: "examples.users"  # type: ignore[assignment]
+    table.__str__ = lambda _self: "examples.users"
 
     msg = sm.get_table_access_error_msg({table})
     assert "examples.users" in msg
 
     err = sm.get_table_access_error_object({table})
     assert err.error_type == SupersetErrorType.TABLE_SECURITY_ACCESS_ERROR
+    assert err.extra is not None
     assert err.extra["tables"] == ["examples.users"]
 
 
@@ -417,9 +416,7 @@ def test_can_access_all_datasources_falls_through_to_perm(
     mocker.patch.object(sm, "can_access_all_databases", return_value=False)
     can_access = mocker.patch.object(sm, "can_access", return_value=True)
     assert sm.can_access_all_datasources() is True
-    can_access.assert_called_once_with(
-        "all_datasource_access", "all_datasource_access"
-    )
+    can_access.assert_called_once_with("all_datasource_access", "all_datasource_access")
 
 
 def test_can_access_database_with_explicit_grant(
@@ -944,9 +941,7 @@ def test_raise_for_access_dashboard_at_least_one_accessible_datasource(
     mocker.patch.object(sm, "is_admin", return_value=False)
     mocker.patch.object(sm, "is_owner", return_value=False)
     mocker.patch("superset.is_feature_enabled", return_value=False)
-    mocker.patch.object(
-        sm, "can_access_datasource", side_effect=[False, True]
-    )
+    mocker.patch.object(sm, "can_access_datasource", side_effect=[False, True])
     dashboard = mocker.MagicMock()
     dashboard.datasources = [mocker.MagicMock(), mocker.MagicMock()]
     sm.raise_for_access(dashboard=dashboard)
@@ -1106,9 +1101,7 @@ def test_is_guest_user_when_feature_enabled_with_user(
 ) -> None:
     mocker.patch("superset.is_feature_enabled", return_value=True)
     user = SimpleNamespace(is_guest_user=True)
-    mocker.patch(
-        "superset.security.manager.get_current_user", return_value=user
-    )
+    mocker.patch("superset.security.manager.get_current_user", return_value=user)
     mocker.patch("superset.security.manager.g", new=SimpleNamespace(user=user))
     assert SupersetSecurityManager.is_guest_user() is True
 
@@ -1302,8 +1295,7 @@ def test_get_guest_token_jwt_audience_callable(
     fake_conf.__getitem__.return_value = lambda: "https://example.com"
     mocker.patch("superset.security.manager.get_conf", return_value=fake_conf)
     assert (
-        SupersetSecurityManager._get_guest_token_jwt_audience()
-        == "https://example.com"
+        SupersetSecurityManager._get_guest_token_jwt_audience() == "https://example.com"
     )
 
 
@@ -1391,9 +1383,9 @@ def test_create_guest_access_token_calls_jwt_encode(
     sm.pyjwt_for_guest_token = fake_jwt
 
     out = sm.create_guest_access_token(
-        user={"username": "alice"},  # type: ignore[arg-type]
-        resources=[],  # type: ignore[arg-type]
-        rls=[],  # type: ignore[arg-type]
+        user={"username": "alice"},
+        resources=[],
+        rls=[],
     )
     assert out == b"token"
     fake_jwt.encode.assert_called_once()
@@ -1542,9 +1534,7 @@ def test_get_user_by_username_returns_query_result(
     sm = SupersetSecurityManager(appbuilder)
     user = mocker.MagicMock()
     fake_session = mocker.MagicMock()
-    fake_session.query.return_value.filter.return_value.one_or_none.return_value = (
-        user
-    )
+    fake_session.query.return_value.filter.return_value.one_or_none.return_value = user
     mocker.patch.object(
         type(sm), "session", new_callable=mocker.PropertyMock, return_value=fake_session
     )
@@ -1783,7 +1773,7 @@ def test_validate_guest_token_resources_dashboard_present(
 
     mocker.patch.object(Dashboard, "get", return_value=mocker.MagicMock())
     SupersetSecurityManager.validate_guest_token_resources(
-        [{"type": GuestTokenResourceType.DASHBOARD.value, "id": "1"}]
+        [{"type": GuestTokenResourceType.DASHBOARD, "id": "1"}]
     )
 
 
@@ -1799,7 +1789,7 @@ def test_validate_guest_token_resources_falls_back_to_embedded(
         EmbeddedDashboardDAO, "find_by_id", return_value=mocker.MagicMock()
     )
     SupersetSecurityManager.validate_guest_token_resources(
-        [{"type": GuestTokenResourceType.DASHBOARD.value, "id": "abc"}]
+        [{"type": GuestTokenResourceType.DASHBOARD, "id": "abc"}]
     )
 
 
@@ -1817,7 +1807,7 @@ def test_validate_guest_token_resources_raises_when_missing(
     mocker.patch.object(EmbeddedDashboardDAO, "find_by_id", return_value=None)
     with pytest.raises(EmbeddedDashboardNotFoundError):
         SupersetSecurityManager.validate_guest_token_resources(
-            [{"type": GuestTokenResourceType.DASHBOARD.value, "id": "missing"}]
+            [{"type": GuestTokenResourceType.DASHBOARD, "id": "missing"}]
         )
 
 
@@ -1902,9 +1892,7 @@ def test_clean_perms_deletes_orphan_pvms(
     pvms_query.delete.assert_called_once()
 
 
-def test_clean_perms_no_orphans(
-    app_context: None, mocker: MockerFixture
-) -> None:
+def test_clean_perms_no_orphans(app_context: None, mocker: MockerFixture) -> None:
     sm = SupersetSecurityManager(appbuilder)
     fake_session = mocker.MagicMock()
     pvms_query = fake_session.query.return_value.filter.return_value
@@ -1916,9 +1904,7 @@ def test_clean_perms_no_orphans(
     pvms_query.delete.assert_called_once()
 
 
-def test_get_all_pvms_filters_orphans(
-    app_context: None, mocker: MockerFixture
-) -> None:
+def test_get_all_pvms_filters_orphans(app_context: None, mocker: MockerFixture) -> None:
     sm = SupersetSecurityManager(appbuilder)
 
     valid = mocker.MagicMock()
@@ -2498,9 +2484,7 @@ def test_delete_pvm_on_sqla_event_no_pvm_no_op(
     sm = SupersetSecurityManager(appbuilder)
     mocker.patch.object(sm, "find_permission_view_menu", return_value=None)
     mapper, conn = mocker.MagicMock(), mocker.MagicMock()
-    sm._delete_pvm_on_sqla_event(
-        mapper, conn, permission_name="x", view_menu_name="y"
-    )
+    sm._delete_pvm_on_sqla_event(mapper, conn, permission_name="x", view_menu_name="y")
     conn.execute.assert_not_called()
 
 
@@ -2735,9 +2719,7 @@ def test_raise_for_access_query_context_modified_for_guest(
     """A modified query_context for a guest user must raise."""
     sm = SupersetSecurityManager(appbuilder)
     mocker.patch.object(sm, "is_guest_user", return_value=True)
-    mocker.patch(
-        "superset.security.manager.query_context_modified", return_value=True
-    )
+    mocker.patch("superset.security.manager.query_context_modified", return_value=True)
     qc = mocker.MagicMock()
     qc.datasource = mocker.MagicMock()
     qc.datasource.perm = "x"
@@ -2761,9 +2743,7 @@ def test_get_datasources_accessible_by_user_filters_by_query(
     sm = SupersetSecurityManager(appbuilder)
     mocker.patch.object(sm, "can_access_database", return_value=False)
     mocker.patch.object(sm, "can_access", return_value=False)
-    mocker.patch.object(
-        sm, "user_view_menu_names", side_effect=[set(), set(), set()]
-    )
+    mocker.patch.object(sm, "user_view_menu_names", side_effect=[set(), set(), set()])
     db = mocker.MagicMock()
     db.database_name = "examples"
     db.get_default_catalog.return_value = "main"
