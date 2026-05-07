@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 import re
+from re import Pattern
 
 from flask_babel import lazy_gettext as _
 from sqlalchemy.engine.url import URL
@@ -25,20 +26,25 @@ from superset.errors import ErrorLevel, SupersetError, SupersetErrorType
 from superset.exceptions import SupersetSecurityException
 
 # list of unsafe SQLAlchemy dialects
-BLOCKLIST = {
+BLOCKLIST: tuple[Pattern[str], ...] = (
     # sqlite creates a local DB, which allows mapping server's filesystem
     re.compile(r"sqlite(?:\+[^\s]*)?$"),
     # shillelagh allows opening local files (eg, 'SELECT * FROM "csv:///etc/passwd"')
     re.compile(r"shillelagh$"),
     re.compile(r"shillelagh\+apsw$"),
-}
+)
+SUPERSET_META_DB_BLOCKLIST = re.compile(r"superset$")
+
+
+def get_sqlalchemy_uri_blocklist() -> tuple[Pattern[str], ...]:
+    if feature_flag_manager.is_feature_enabled("ENABLE_SUPERSET_META_DB"):
+        return BLOCKLIST
+
+    return (*BLOCKLIST, SUPERSET_META_DB_BLOCKLIST)
 
 
 def check_sqlalchemy_uri(uri: URL) -> None:
-    if not feature_flag_manager.is_feature_enabled("ENABLE_SUPERSET_META_DB"):
-        BLOCKLIST.add(re.compile(r"superset$"))
-
-    for blocklist_regex in BLOCKLIST:
+    for blocklist_regex in get_sqlalchemy_uri_blocklist():
         if not re.match(blocklist_regex, uri.drivername):
             continue
         try:
