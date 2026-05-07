@@ -150,7 +150,7 @@ def test_guest_token_endpoint_success(
     mocker.patch.object(
         security_manager, "validate_guest_token_resources", return_value=None
     )
-    mocker.patch.object(
+    create_token = mocker.patch.object(
         security_manager,
         "create_guest_access_token",
         return_value="header.payload.signature",
@@ -160,7 +160,7 @@ def test_guest_token_endpoint_success(
 
     assert response.status_code == 200
     assert response.json == {"token": "header.payload.signature"}
-    security_manager.create_guest_access_token.assert_called_once_with(
+    create_token.assert_called_once_with(
         guest_token_payload["user"],
         # post_load coerces the enum to its value
         [{"type": "dashboard", "id": "abc-123"}],
